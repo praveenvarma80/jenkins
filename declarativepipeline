@@ -1,0 +1,43 @@
+pipeline
+{
+    agent any
+    stages
+    {
+        stage('contdownloads')
+        {
+            steps
+            {
+                git 'https://github.com/praveenvarma80/maven.git'
+            }
+        }
+        stage('contbuild')
+        {
+            steps
+            {
+                sh 'mvn package'
+            }
+        }
+        stage('contDeployment')
+        {
+            steps
+            {
+                deploy adapters: [tomcat9(credentialsId: 'new', path: '', url: 'http://172.31.31.145:8080')], contextPath: 'testapp', war: '**/*.war'
+            }
+        }
+        stage('contTesting')
+        {
+            steps
+            {
+                git 'https://github.com/praveenvarma80/funtionaltesting.git'
+                sh 'java -jar /var/lib/jenkins/workspace/declarativepipeline/testing.jar'
+            }
+        }
+        stage('contdelivery')
+        {
+            steps
+            {
+                deploy adapters: [tomcat9(credentialsId: 'new', path: '', url: 'http://172.31.17.184:8080')], contextPath: 'prod', war: '**/*.war'
+            }
+        }
+    }
+}

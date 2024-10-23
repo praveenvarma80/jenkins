@@ -1,0 +1,26 @@
+node('built-in')
+{
+     stage('contDownloads') 
+     {
+      git 'https://github.com/praveenvarma80/maven.git' 
+     }
+     stage('contbuild')
+     {
+         sh 'mvn package'
+     }
+     stage('contTesting')
+     {
+         git 'https://github.com/praveenvarma80/funtionaltesting.git'
+         sh 'java -jar /var/lib/jenkins/workspace/scriptedpipeline/testing.jar'
+     }
+     stage('contDelivery')
+     {
+         sh 'scp /var/lib/jenkins/workspace/scriptedpipeline/webapp/target/webapp.war ubuntu@172.31.17.184:/var/lib/tomcat10/webapps/prodapp.war'
+     }
+     stage('contDeployment')
+     {
+         sh 'scp /var/lib/jenkins/workspace/scriptedpipeline/webapp/target/webapp.war ubuntu@172.31.31.145:/var/lib/tomcat10/webapps/testapp.war'
+     }
+     
+     
+}
