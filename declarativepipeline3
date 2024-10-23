@@ -1,0 +1,100 @@
+pipeline
+{
+    agent any
+    stages
+    {
+        stage('contdownloads')
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        git 'https://github.com/praveenvarma80/maven.git'
+                    }
+                    catch(Exception e1)
+                    {
+                        mail bcc: '', body: 'any failed ', cc: '', from: '', replyTo: '', subject: 'failde ci', to: 'praveen@gmail.com'
+                        exit(1)
+                    }
+                }
+            }
+        }
+        stage('contbuild')
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        sh 'mvn package'
+                    }
+                    catch(Exception e2)
+                    {
+                       mail bcc: '', body: 'any failed ', cc: '', from: '', replyTo: '', subject: 'failde ci', to: 'praveen@gmail.com'
+                       exit(1)
+                    }
+                }
+            }
+        }
+        stage('contDeployment')
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                      deploy adapters: [tomcat9(credentialsId: 'new', path: '', url: 'http://172.31.31.145:8080')], contextPath: 'testapp', war: '**/*.war'
+                    }
+                    catch(Exception e3)
+                    {
+                       mail bcc: '', body: 'any failed ', cc: '', from: '', replyTo: '', subject: 'failde ci', to: 'praveen@gmail.com'
+                       exit(1)
+                    }
+                }    
+            }
+        }
+        stage('contTesting')
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        git 'https://github.com/praveenvarma80/funtionaltesting.git'
+                        sh 'java -jar /var/lib/jenkins/workspace/declarativepipeline/testing.jar'
+                    }
+                    catch(Exception e4)
+                    {
+                       mail bcc: '', body: 'any failed ', cc: '', from: '', replyTo: '', subject: 'failde ci', to: 'praveen@gmail.com'
+                       exit(1)
+                    }
+                }
+                
+            }
+        }
+        stage('contdelivery')
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                       deploy adapters: [tomcat9(credentialsId: 'new', path: '', url: 'http://172.31.17.184:8080')], contextPath: 'prod', war: '**/*.war'
+                    }
+                    catch(Exception e5)
+                    {
+                       mail bcc: '', body: 'any failed ', cc: '', from: '', replyTo: '', subject: 'failde ci', to: 'praveen@gmail.com'
+                       exit(1)
+                    }
+                }
+            }
+        }
+    }
+}
+
