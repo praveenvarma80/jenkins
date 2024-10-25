@@ -1,0 +1,38 @@
+@Library('praveen')_
+pipeline
+{
+    agent any
+    stages
+    {
+        stage('loansDownload')
+        {
+            steps
+            {
+                script
+                {
+                    math.gitDownload("maven")
+                }
+            }
+        } 
+        stage('loansBuild')
+        {
+            steps
+            {
+                script
+                {
+                    math.buildArtifact()
+                }
+            }
+        }
+         stage('loansDeployment')
+        {
+            steps
+            {
+                script
+                {
+                    math.deployTomcat("library","172.31.31.145","testapp")
+                }
+            }
+        }
+    }
+}
