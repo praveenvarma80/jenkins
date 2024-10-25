@@ -1,0 +1,27 @@
+@Library('praveen')_
+node('built-in')
+{
+   stage('contDownload')
+    {
+        math.gitDownload("maven")
+    } 
+    stage('contBuild')
+    {
+       math.buildArtifact()
+    }
+     stage('contDeployment')
+    {
+       math.deployTomcat("scriptedpipelinelibrary","172.31.31.145","mytestapp")
+    }
+     stage('contTesting')
+    {
+      math.gitDownload("funtionalTesting")
+      math.RunSelenium("scriptedpipelinelibrary")
+    }
+    stage('contDelivery')
+    {
+      math.deployTomcat("scriptedpipelinelibrary","172.31.17.184","myprodapp")
+    }
+    
+}
+
